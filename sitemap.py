@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Sitemap
 -------
@@ -8,19 +7,19 @@ The sitemap plugin generates plain-text or XML sitemaps.
 
 # https://github.com/getpelican/pelican-plugins/tree/master/sitemap
 
-from __future__ import unicode_literals
 
-import re
+# Core Library modules
 import collections
 import os.path
-
-from datetime import datetime
-from logging import warning, info
+import re
 from codecs import open
-from pytz import timezone
+from datetime import datetime
+from logging import info, warning
 
-from pelican import signals, contents
+# Third party modules
+from pelican import contents, signals
 from pelican.utils import get_date
+from pytz import timezone
 
 TXT_HEADER = """{0}/index.html
 {0}/archives.html
@@ -57,7 +56,7 @@ def format_date(date):
     return date.strftime("%Y-%m-%dT%H:%M:%S") + tz
 
 
-class SitemapGenerator(object):
+class SitemapGenerator:
     def __init__(self, context, settings, path, theme, output_path, *null):
 
         self.output_path = output_path
@@ -117,7 +116,7 @@ class SitemapGenerator(object):
                         warning("sitemap plugin: priorities must be numbers")
                         warning(
                             "sitemap plugin: setting SITEMAP['priorities']"
-                            "['{0}'] on {1}".format(k, default)
+                            "['{}'] on {}".format(k, default)
                         )
                         pris[k] = default
                 self.priorities.update(pris)
@@ -130,10 +129,10 @@ class SitemapGenerator(object):
                 for k, v in chfreqs.items():
                     if k in valid_keys and v not in valid_chfreqs:
                         default = self.changefreqs[k]
-                        warning("sitemap plugin: invalid changefreq `{0}'".format(v))
+                        warning(f"sitemap plugin: invalid changefreq `{v}'")
                         warning(
                             "sitemap plugin: setting SITEMAP['changefreqs']"
-                            "['{0}'] on '{1}'".format(k, default)
+                            "['{}'] on '{}'".format(k, default)
                         )
                         chfreqs[k] = default
                 self.changefreqs.update(chfreqs)
@@ -212,7 +211,7 @@ class SitemapGenerator(object):
             setattr(wrapper, "modified", str(lastmod))
 
     def generate_output(self, writer):
-        path = os.path.join(self.output_path, "sitemap.{0}".format(self.format))
+        path = os.path.join(self.output_path, f"sitemap.{self.format}")
 
         pages = (
             self.context["pages"]
@@ -229,7 +228,7 @@ class SitemapGenerator(object):
         for article in self.context["articles"]:
             pages += article.translations
 
-        info("writing {0}".format(path))
+        info(f"writing {path}")
 
         with open(path, "w", encoding="utf-8") as fd:
 
